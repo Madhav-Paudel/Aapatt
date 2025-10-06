@@ -1,0 +1,91 @@
+{
+  "expo": {
+    "name": "Aapatt",
+    "slug": "aapatt-citizen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E53935"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aapatt.citizen",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Aapatt needs your location to help emergency services find you quickly during emergencies.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Aapatt needs your location to help emergency services find you quickly during emergencies.",
+        "NSCameraUsageDescription": "Aapatt uses the camera for AI-powered first aid analysis to provide better emergency assistance.",
+        "NSMicrophoneUsageDescription": "Aapatt may use the microphone for emergency calls and voice commands."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E53935"
+      },
+      "package": "com.aapatt.citizen",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Aapatt to use your location to help emergency services find you quickly."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Aapatt to access your camera for AI-powered first aid analysis."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#E53935",
+          "sounds": [
+            "./assets/sounds/emergency-alert.wav"
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "socketUrl": "http://localhost:3000",
+      "firebaseConfig": {
+        "apiKey": "your-firebase-api-key",
+        "authDomain": "aapatt-emergency.firebaseapp.com",
+        "projectId": "aapatt-emergency",
+        "storageBucket": "aapatt-emergency.appspot.com",
+        "messagingSenderId": "123456789",
+        "appId": "1:123456789:android:abcdef123456"
+      },
+      "eas": {
+        "projectId": "your-eas-project-id"
+      }
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

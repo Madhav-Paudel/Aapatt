@@ -1,0 +1,60 @@
+{
+  "name": "aapatt",
+  "version": "1.0.0",
+  "description": "Aapatt Emergency Response System - Free Tier Implementation",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && npm run setup:workspaces",
+    "setup:workspaces": "npm run setup:backend && npm run setup:citizen && npm run setup:provider && npm run setup:admin",
+    "setup:backend": "cd backend && npm install",
+    "setup:citizen": "cd citizen-app && npm install", 
+    "setup:provider": "cd provider-app && npm install",
+    "setup:admin": "cd admin-dashboard && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:citizen": "cd citizen-app && npm start",
+    "dev:provider": "cd provider-app && npm start", 
+    "dev:admin": "cd admin-dashboard && npm run dev",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:admin\"",
+    "build:all": "npm run build:backend && npm run build:admin && npm run build:apps",
+    "build:backend": "cd backend && npm run build",
+    "build:admin": "cd admin-dashboard && npm run build",
+    "build:apps": "npm run build:citizen && npm run build:provider",
+    "build:citizen": "cd citizen-app && expo build",
+    "build:provider": "cd provider-app && expo build",
+    "test": "npm run test:backend && npm run test:apps",
+    "test:backend": "cd backend && npm test",
+    "test:apps": "npm run test:citizen && npm run test:provider",
+    "test:citizen": "cd citizen-app && npm test",
+    "test:provider": "cd provider-app && npm test",
+    "lint": "npm run lint:backend && npm run lint:admin",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:admin": "cd admin-dashboard && npm run lint",
+    "deploy": "npm run deploy:backend && npm run deploy:admin",
+    "deploy:backend": "cd backend && npm run deploy",
+    "deploy:admin": "cd admin-dashboard && npm run deploy"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "@types/node": "^20.8.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/aapatt.git"
+  },
+  "keywords": [
+    "emergency",
+    "ambulance",
+    "fire-brigade", 
+    "first-aid",
+    "react-native",
+    "nodejs",
+    "supabase",
+    "free-tier"
+  ],
+  "author": "Madhav",
+  "license": "MIT"
+}

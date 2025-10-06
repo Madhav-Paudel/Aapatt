@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id          String   @id @default(uuid())
+  phone       String   @unique
+  name        String
+  role        UserRole @default(CITIZEN)
+  isVerified  Boolean  @default(false)
+  fcmToken    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  emergencyRequests EmergencyRequest[]
+  provider          Provider?
+  notifications     Notification[]
+
+  @@map("users")
+}
+
+// Provider model for emergency service providers
+model Provider {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  type            EmergencyType
+  vehicleNumber   String
+  licenseNumber   String
+  currentLat      Float?
+  currentLng      Float?
+  currentAddress  String?
+  status          ProviderStatus @default(OFFLINE)
+  isOnline        Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedRequests   EmergencyRequest[]
+  locationUpdates    LocationUpdate[]
+
+  @@map("providers")
+}
+
+// Emergency request model
+model EmergencyRequest {
+  id                String        @id @default(uuid())
+  citizenId         String
+  type              EmergencyType
+  status            RequestStatus @default(PENDING)
+  locationLat       Float
+  locationLng       Float
+  locationAddress   String?
+  locationLandmark  String?
+  description       String?
+  isSecurityAlert   Boolean       @default(false)
+  assignedProviderId String?
+  estimatedArrival  DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  citizen           User              @relation(fields: [citizenId], references: [id])
+  assignedProvider  Provider?         @relation(fields: [assignedProviderId], references: [id])
+  statusUpdates     RequestStatusUpdate[]
+  aiAnalyses        AIAnalysis[]
+
+  @@map("emergency_requests")
+}
+
+// Request status update history
+model RequestStatusUpdate {
+  id        String        @id @default(uuid())
+  requestId String
+  status    RequestStatus
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  // Relations
+  request   EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("request_status_updates")
+}
+
+// Provider location tracking
+model LocationUpdate {
+  id         String   @id @default(uuid())
+  providerId String
+  latitude   Float
+  longitude  Float
+  address    String?
+  speed      Float?
+  heading    Float?
+  accuracy   Float?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId, createdAt])
+  @@map("location_updates")
+}
+
+// AI analysis for first aid
+model AIAnalysis {
+  id           String      @id @default(uuid())
+  requestId    String?
+  imageUrl     String?
+  condition    AICondition @default(UNKNOWN)
+  confidence   Float
+  firstAidSteps String[]
+  videoUrl     String?
+  isEmergency  Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+
+  // Relations
+  request      EmergencyRequest? @relation(fields: [requestId], references: [id])
+
+  @@map("ai_analyses")
+}
+
+// Notification model
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  data      Json?
+  isRead    Boolean  @default(false)
+  sentAt    DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// Enums
+enum UserRole {
+  CITIZEN
+  PROVIDER
+  ADMIN
+  SECURITY
+}
+
+enum EmergencyType {
+  AMBULANCE
+  FIRE_BRIGADE
+  AIR_AMBULANCE
+}
+
+enum RequestStatus {
+  PENDING
+  ASSIGNED
+  ACCEPTED
+  ENROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}
+
+enum ProviderStatus {
+  OFFLINE
+  AVAILABLE
+  BUSY
+}
+
+enum AICondition {
+  BLEEDING
+  CHOKING
+  CPR_NEEDED
+  BURNS
+  FRACTURE
+  UNCONSCIOUS
+  UNKNOWN
+}
