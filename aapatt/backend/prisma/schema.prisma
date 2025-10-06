@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  phone        String   @unique
+  role         Role
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  providers    Provider[]
+  requests     Request[] @relation("CitizenRequests")
+}
+
+enum Role {
+  CITIZEN
+  PROVIDER
+  ADMIN
+}
+
+model Provider {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  type         ProviderType
+  isOnline     Boolean  @default(false)
+  latitude     Float?
+  longitude    Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  requests     Request[]
+}
+
+enum ProviderType {
+  AMBULANCE
+  FIRE
+  AIR
+}
+
+model Request {
+  id           String   @id @default(cuid())
+  type         ProviderType
+  citizenId    String
+  citizen      User     @relation("CitizenRequests", fields: [citizenId], references: [id])
+  providerId   String?
+  provider     Provider? @relation(fields: [providerId], references: [id])
+  latitude     Float
+  longitude    Float
+  description  String?
+  status       RequestStatus @default(PENDING)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}

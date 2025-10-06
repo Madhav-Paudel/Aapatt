@@ -1,0 +1,21 @@
+{
+  "name": "aapatt",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "citizen-app",
+    "provider-app",
+    "admin-dashboard",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "setup": "npm install && npm run -w backend prisma:generate",
+    "dev:backend": "npm run -w backend dev",
+    "dev:admin": "npm run -w admin-dashboard dev",
+    "dev:citizen": "npm run -w citizen-app start",
+    "dev:provider": "npm run -w provider-app start",
+    "build:all": "npm run -w admin-dashboard build",
+    "deploy": "echo 'Add deployment steps for Render/Vercel/Expo'"
+  }
+}
