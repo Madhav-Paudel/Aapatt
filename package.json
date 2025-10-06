@@ -1,0 +1,45 @@
+{
+  "name": "aapatt-emergency-superapp",
+  "version": "1.0.0",
+  "description": "Aapatt - Emergency Response Superapp for Developing Countries",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:admin": "cd admin-dashboard && npm run dev",
+    "dev:citizen": "cd citizen-app && npm start",
+    "dev:provider": "cd provider-app && npm start",
+    "build:all": "npm run build:backend && npm run build:admin && npm run build:citizen && npm run build:provider",
+    "build:backend": "cd backend && npm run build",
+    "build:admin": "cd admin-dashboard && npm run build",
+    "build:citizen": "cd citizen-app && npm run build",
+    "build:provider": "cd provider-app && npm run build",
+    "deploy": "npm run build:all && node scripts/deploy.js",
+    "test": "npm run test:backend && npm run test:admin",
+    "test:backend": "cd backend && npm test",
+    "test:admin": "cd admin-dashboard && npm test"
+  },
+  "keywords": [
+    "emergency",
+    "response",
+    "ambulance",
+    "fire-brigade",
+    "air-ambulance",
+    "react-native",
+    "nodejs",
+    "postgresql",
+    "socket.io"
+  ],
+  "author": "Aapatt Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "citizen-app",
+    "provider-app", 
+    "admin-dashboard",
+    "backend",
+    "shared"
+  ]
+}
