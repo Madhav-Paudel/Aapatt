@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "Aapatt",
+    "slug": "aapatt-citizen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E53935"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aapatt.citizen",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Aapatt needs your location to send help to you during emergencies.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Aapatt needs your location to send help to you during emergencies.",
+        "NSCameraUsageDescription": "Aapatt needs camera access for AI-powered injury analysis."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E53935"
+      },
+      "package": "com.aapatt.citizen",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Aapatt to use your location for emergency services."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Aapatt to access your camera for injury analysis."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "eas": {
+        "projectId": "aapatt-citizen"
+      }
+    }
+  }
+}
