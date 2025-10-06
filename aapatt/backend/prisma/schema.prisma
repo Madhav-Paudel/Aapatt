@@ -1,0 +1,179 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  phoneNumber String   @unique
+  name        String?
+  email       String?
+  isVerified  Boolean  @default(false)
+  userType    UserType @default(CITIZEN)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  citizenProfile    CitizenProfile?
+  providerProfile   ProviderProfile?
+  emergencyRequests EmergencyRequest[] @relation("RequestedBy")
+  acceptedRequests  EmergencyRequest[] @relation("AcceptedBy")
+
+  @@map("users")
+}
+
+model CitizenProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  address   String?
+  emergencyContacts Json?
+  preferences Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("citizen_profiles")
+}
+
+model ProviderProfile {
+  id           String        @id @default(cuid())
+  userId       String        @unique
+  serviceType  ServiceType
+  licenseNumber String?
+  vehicleInfo  Json?
+  isAvailable  Boolean       @default(false)
+  isOnline     Boolean       @default(false)
+  currentLat   Float?
+  currentLng   Float?
+  rating       Float         @default(0)
+  totalJobs    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("provider_profiles")
+}
+
+model EmergencyRequest {
+  id          String            @id @default(cuid())
+  requestType RequestType
+  status      RequestStatus     @default(PENDING)
+  description String?
+  address     String?
+  latitude    Float
+  longitude   Float
+  requestedBy String
+  acceptedBy  String?
+  eta         Int? // in minutes
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  completedAt DateTime?
+
+  // Relations
+  requester User  @relation("RequestedBy", fields: [requestedBy], references: [id])
+  accepter  User? @relation("AcceptedBy", fields: [acceptedBy], references: [id])
+  updates   RequestUpdate[]
+
+  @@map("emergency_requests")
+}
+
+model RequestUpdate {
+  id        String   @id @default(cuid())
+  requestId String
+  status    RequestStatus
+  message   String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+
+  // Relations
+  request EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("request_updates")
+}
+
+model LocationUpdate {
+  id        String   @id @default(cuid())
+  userId    String
+  latitude  Float
+  longitude Float
+  accuracy  Float?
+  createdAt DateTime @default(now())
+
+  @@map("location_updates")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  data      Json?
+  createdAt DateTime         @default(now())
+
+  @@map("notifications")
+}
+
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String @default("string")
+
+  @@map("system_config")
+}
+
+// Enums
+enum UserType {
+  CITIZEN
+  PROVIDER
+  ADMIN
+}
+
+enum ServiceType {
+  AMBULANCE
+  FIRE_BRIGADE
+  AIR_AMBULANCE
+  POLICE
+  RESCUE
+}
+
+enum RequestType {
+  AMBULANCE
+  FIRE_BRIGADE
+  AIR_AMBULANCE
+  POLICE
+  RESCUE
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum NotificationType {
+  EMERGENCY_REQUEST
+  REQUEST_ACCEPTED
+  REQUEST_UPDATED
+  PROVIDER_ARRIVED
+  REQUEST_COMPLETED
+  SYSTEM_ALERT
+}

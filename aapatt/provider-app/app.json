@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Aapatt Provider",
+    "slug": "aapatt-provider",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1565C0"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aapatt.provider",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to location to track your position for emergency requests.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to track your position for emergency requests.",
+        "NSMicrophoneUsageDescription": "This app needs access to microphone for emergency calls."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1565C0"
+      },
+      "package": "com.aapatt.provider",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECORD_AUDIO",
+        "VIBRATE",
+        "WAKE_LOCK",
+        "RECEIVE_BOOT_COMPLETED",
+        "FOREGROUND_SERVICE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "firebaseConfig": {
+        "apiKey": "your-api-key",
+        "authDomain": "aapatt-emergency.firebaseapp.com",
+        "projectId": "aapatt-emergency",
+        "storageBucket": "aapatt-emergency.appspot.com",
+        "messagingSenderId": "123456789",
+        "appId": "1:123456789:web:abcdef123456"
+      }
+    },
+    "plugins": [
+      "expo-location",
+      "expo-notifications"
+    ]
+  }
+}
