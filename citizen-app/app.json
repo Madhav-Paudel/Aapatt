@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Aapatt",
+    "slug": "aapatt-citizen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E53935"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aapatt.citizen",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Aapatt needs location access to send emergency services to your exact location.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Aapatt needs location access to send emergency services to your exact location.",
+        "NSCameraUsageDescription": "Aapatt needs camera access to analyze injuries and provide first-aid guidance.",
+        "NSMicrophoneUsageDescription": "Aapatt may need microphone access for emergency calls."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E53935"
+      },
+      "package": "com.aapatt.citizen",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-location",
+      "expo-camera",
+      "expo-notifications"
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "socketUrl": "http://localhost:3000",
+      "firebaseConfig": {
+        "apiKey": "your-api-key",
+        "authDomain": "aapatt-emergency.firebaseapp.com",
+        "projectId": "aapatt-emergency",
+        "storageBucket": "aapatt-emergency.appspot.com",
+        "messagingSenderId": "123456789",
+        "appId": "1:123456789:android:abcdef"
+      }
+    }
+  }
+}

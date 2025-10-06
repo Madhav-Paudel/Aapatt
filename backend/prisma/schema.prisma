@@ -1,0 +1,311 @@
+// Aapatt Emergency Superapp - Database Schema
+// PostgreSQL with PostGIS for geospatial queries
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for all app users
+model User {
+  id          String   @id @default(cuid())
+  phoneNumber String   @unique
+  name        String
+  email       String?  @unique
+  role        UserRole @default(CITIZEN)
+  isVerified  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  citizenRequests EmergencyRequest[] @relation("CitizenRequests")
+  provider        Provider?
+  notifications   Notification[]
+  emergencyContacts EmergencyContact[]
+  sessions        UserSession[]
+
+  @@map("users")
+}
+
+// Provider model for emergency service providers
+model Provider {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  type          EmergencyType
+  status        ProviderStatus @default(OFFLINE)
+  vehicleNumber String
+  licenseNumber String
+  rating        Float          @default(0.0)
+  totalJobs     Int            @default(0)
+  completedJobs Int            @default(0)
+  isVerified    Boolean        @default(false)
+  lastSeen      DateTime       @default(now())
+  
+  // Location data
+  latitude      Float?
+  longitude     Float?
+  address       String?
+  landmark      String?
+  
+  // Documents
+  licenseDoc    String?
+  vehicleDoc    String?
+  insuranceDoc  String?
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedRequests   EmergencyRequest[]   @relation("AssignedProvider")
+  locationUpdates    LocationUpdate[]
+  providerRatings    ProviderRating[]
+
+  @@map("providers")
+}
+
+// Emergency request model
+model EmergencyRequest {
+  id          String        @id @default(cuid())
+  citizenId   String
+  providerId  String?
+  type        EmergencyType
+  status      RequestStatus @default(PENDING)
+  priority    Int           @default(1)
+  description String
+  
+  // Location data
+  latitude    Float
+  longitude   Float
+  address     String?
+  landmark    String?
+  
+  // Timing data
+  createdAt   DateTime      @default(now())
+  acceptedAt  DateTime?
+  arrivedAt   DateTime?
+  completedAt DateTime?
+  
+  // Additional data
+  eta         Int?          // Estimated time of arrival in minutes
+  distance    Float?        // Distance in meters
+  notes       String?
+  metadata    Json?         // Additional request data
+  
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  citizen         User             @relation("CitizenRequests", fields: [citizenId], references: [id])
+  provider        Provider?        @relation("AssignedProvider", fields: [providerId], references: [id])
+  statusUpdates   StatusUpdate[]
+  locationUpdates LocationUpdate[]
+  notifications   Notification[]
+
+  @@map("emergency_requests")
+}
+
+// Location updates for real-time tracking
+model LocationUpdate {
+  id         String   @id @default(cuid())
+  providerId String
+  requestId  String?
+  latitude   Float
+  longitude  Float
+  accuracy   Float?
+  speed      Float?
+  heading    Float?
+  eta        Int?     // Updated ETA in minutes
+  timestamp  DateTime @default(now())
+
+  // Relations
+  provider Provider         @relation(fields: [providerId], references: [id])
+  request  EmergencyRequest? @relation(fields: [requestId], references: [id])
+
+  @@map("location_updates")
+}
+
+// Status updates for request tracking
+model StatusUpdate {
+  id        String        @id @default(cuid())
+  requestId String
+  status    RequestStatus
+  notes     String?
+  timestamp DateTime      @default(now())
+  updatedBy String?       // User ID who made the update
+
+  // Relations
+  request EmergencyRequest @relation(fields: [requestId], references: [id])
+
+  @@map("status_updates")
+}
+
+// User sessions for authentication
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  refreshToken String?  @unique
+  deviceId     String?
+  deviceType   String?
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+// Notifications model
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  requestId String?
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?            // Additional notification data
+  isRead    Boolean          @default(false)
+  sentAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user    User              @relation(fields: [userId], references: [id])
+  request EmergencyRequest? @relation(fields: [requestId], references: [id])
+
+  @@map("notifications")
+}
+
+// Emergency contacts for users
+model EmergencyContact {
+  id           String      @id @default(cuid())
+  userId       String
+  name         String
+  phoneNumber  String
+  relationship String
+  isPrimary    Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("emergency_contacts")
+}
+
+// Provider ratings and reviews
+model ProviderRating {
+  id         String   @id @default(cuid())
+  providerId String
+  requestId  String   @unique
+  citizenId  String
+  rating     Int      // 1-5 stars
+  review     String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  provider Provider @relation(fields: [providerId], references: [id])
+
+  @@map("provider_ratings")
+}
+
+// First aid guides
+model FirstAidGuide {
+  id          String   @id @default(cuid())
+  category    String
+  title       String
+  description String
+  steps       String[] // Array of step-by-step instructions
+  images      String[] // Array of image URLs
+  videos      String[] // Array of video URLs
+  severity    String   // low, medium, high, critical
+  requiresEmergencyCall Boolean @default(false)
+  tags        String[] // Search tags
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("first_aid_guides")
+}
+
+// System analytics
+model Analytics {
+  id        String   @id @default(cuid())
+  metric    String   // requests_count, response_time, etc.
+  value     Float
+  period    String   // hour, day, week, month
+  metadata  Json?    // Additional metric data
+  timestamp DateTime @default(now())
+
+  @@map("analytics")
+}
+
+// Geofence areas
+model GeofenceArea {
+  id         String    @id @default(cuid())
+  name       String
+  boundaries Json      // Array of lat/lng coordinates
+  type       String    // city, district, zone
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("geofence_areas")
+}
+
+// System health monitoring
+model SystemHealth {
+  id          String   @id @default(cuid())
+  service     String   // database, redis, socket, ai, notifications
+  status      String   // healthy, degraded, down
+  responseTime Float?  // Response time in milliseconds
+  details     Json?    // Additional health data
+  timestamp   DateTime @default(now())
+
+  @@map("system_health")
+}
+
+// Enums
+enum UserRole {
+  CITIZEN
+  PROVIDER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum EmergencyType {
+  AMBULANCE
+  FIRE
+  AIR_AMBULANCE
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+  TIMEOUT
+}
+
+enum ProviderStatus {
+  ONLINE
+  OFFLINE
+  BUSY
+  UNAVAILABLE
+}
+
+enum NotificationType {
+  EMERGENCY_REQUEST
+  STATUS_UPDATE
+  SYSTEM_ALERT
+  MARKETING
+}

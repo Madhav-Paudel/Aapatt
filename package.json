@@ -1,0 +1,43 @@
+{
+  "name": "aapatt-emergency-superapp",
+  "version": "1.0.0",
+  "description": "Aapatt - Emergency Response Superapp for Developing Countries",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:admin": "cd admin-dashboard && npm run dev",
+    "dev:citizen": "cd citizen-app && expo start",
+    "dev:provider": "cd provider-app && expo start",
+    "build:backend": "cd backend && npm run build",
+    "build:admin": "cd admin-dashboard && npm run build",
+    "build:citizen": "cd citizen-app && expo build",
+    "build:provider": "cd provider-app && expo build",
+    "build:all": "npm run build:backend && npm run build:admin && npm run build:citizen && npm run build:provider",
+    "install:all": "npm install && cd backend && npm install && cd ../admin-dashboard && npm install && cd ../citizen-app && npm install && cd ../provider-app && npm install && cd ../shared && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "emergency",
+    "healthcare",
+    "ambulance",
+    "fire-brigade",
+    "react-native",
+    "nodejs",
+    "postgresql",
+    "socket.io"
+  ],
+  "author": "Aapatt Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aapatt/emergency-superapp"
+  },
+  "workspaces": [
+    "backend",
+    "admin-dashboard", 
+    "citizen-app",
+    "provider-app",
+    "shared"
+  ]
+}
