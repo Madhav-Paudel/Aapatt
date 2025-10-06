@@ -1,0 +1,166 @@
+// Aapatt Database Schema
+// PostgreSQL with PostGIS for geospatial queries
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+enum UserRole {
+  CITIZEN
+  PROVIDER
+  ADMIN
+}
+
+enum EmergencyType {
+  AMBULANCE
+  FIRE_BRIGADE
+  AIR_AMBULANCE
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}
+
+enum ProviderStatus {
+  ONLINE
+  OFFLINE
+  BUSY
+}
+
+model User {
+  id            String    @id @default(uuid())
+  phone         String    @unique
+  name          String
+  role          UserRole  @default(CITIZEN)
+  firebaseUid   String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  requests      EmergencyRequest[]
+  provider      Provider?
+  
+  @@index([phone])
+  @@index([firebaseUid])
+}
+
+model Provider {
+  id              String          @id @default(uuid())
+  userId          String          @unique
+  serviceType     EmergencyType
+  vehicleNumber   String
+  licenseNumber   String
+  status          ProviderStatus  @default(OFFLINE)
+  latitude        Float?
+  longitude       Float?
+  rating          Float           @default(0)
+  completedJobs   Int             @default(0)
+  isVerified      Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests        EmergencyRequest[]
+  locationHistory LocationHistory[]
+  
+  @@index([serviceType, status])
+  @@index([latitude, longitude])
+}
+
+model EmergencyRequest {
+  id              String        @id @default(uuid())
+  userId          String
+  providerId      String?
+  type            EmergencyType
+  status          RequestStatus @default(PENDING)
+  latitude        Float
+  longitude       Float
+  address         String?
+  description     String?
+  requiresSecurity Boolean      @default(false)
+  estimatedTime   Int?          // ETA in minutes
+  distance        Float?        // Distance in km
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  acceptedAt      DateTime?
+  completedAt     DateTime?
+  
+  // Relations
+  user            User          @relation(fields: [userId], references: [id])
+  provider        Provider?     @relation(fields: [providerId], references: [id])
+  statusUpdates   StatusUpdate[]
+  
+  @@index([userId])
+  @@index([providerId])
+  @@index([type, status])
+  @@index([createdAt])
+}
+
+model StatusUpdate {
+  id        String          @id @default(uuid())
+  requestId String
+  status    RequestStatus
+  message   String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime        @default(now())
+  
+  // Relations
+  request   EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  
+  @@index([requestId])
+}
+
+model LocationHistory {
+  id         String   @id @default(uuid())
+  providerId String
+  latitude   Float
+  longitude  Float
+  speed      Float?   // Speed in km/h
+  accuracy   Float?   // GPS accuracy in meters
+  createdAt  DateTime @default(now())
+  
+  // Relations
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  
+  @@index([providerId, createdAt])
+}
+
+model FirstAidGuide {
+  id          String   @id @default(uuid())
+  injuryType  String   @unique
+  title       String
+  description String
+  steps       String[] // Array of step-by-step instructions
+  videoUrl    String?
+  imageUrl    String?
+  severity    String   // LOW, MEDIUM, HIGH, CRITICAL
+  autoCall911 Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([injuryType])
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  level     String   // INFO, WARNING, ERROR
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  
+  @@index([level, createdAt])
+}

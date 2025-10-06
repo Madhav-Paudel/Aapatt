@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Aapatt Provider",
+    "slug": "aapatt-provider",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1565C0"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aapatt.provider",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Aapatt Provider needs your location to navigate to emergencies.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Aapatt Provider needs your location to navigate to emergencies.",
+        "UIBackgroundModes": ["location"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1565C0"
+      },
+      "package": "com.aapatt.provider",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Aapatt Provider to use your location for emergency navigation."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:3000",
+      "eas": {
+        "projectId": "aapatt-provider"
+      }
+    }
+  }
+}
