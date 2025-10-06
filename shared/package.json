@@ -1,0 +1,21 @@
+{
+  "name": "aapatt-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Aapatt Emergency Superapp",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "echo 'Shared package build complete'",
+    "test": "echo 'No tests for shared package'"
+  },
+  "keywords": [
+    "emergency",
+    "shared",
+    "utilities",
+    "types"
+  ],
+  "author": "Aapatt Team",
+  "license": "MIT",
+  "dependencies": {
+    "joi": "^17.11.0"
+  }
+}

@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  phoneNumber String   @unique
+  name        String?
+  email       String?
+  userType    UserType @default(CITIZEN)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Citizen specific fields
+  emergencyContacts Json?
+  preferences      Json?
+
+  // Provider specific fields
+  providerProfile ProviderProfile?
+  requests        EmergencyRequest[] @relation("ProviderRequests")
+
+  // Relations
+  emergencyRequests EmergencyRequest[] @relation("CitizenRequests")
+  notifications     Notification[]
+
+  @@map("users")
+}
+
+model ProviderProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  serviceType       ServiceType
+  licenseNumber     String?
+  vehicleNumber     String?
+  isVerified        Boolean  @default(false)
+  isOnline          Boolean  @default(false)
+  currentLatitude   Float?
+  currentLongitude  Float?
+  lastLocationUpdate DateTime?
+  
+  rating            Float    @default(0)
+  totalJobs         Int      @default(0)
+  completedJobs     Int      @default(0)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("provider_profiles")
+}
+
+model EmergencyRequest {
+  id              String            @id @default(cuid())
+  citizenId       String
+  citizen         User              @relation("CitizenRequests", fields: [citizenId], references: [id])
+  
+  providerId      String?
+  provider        User?             @relation("ProviderRequests", fields: [providerId], references: [id])
+  
+  serviceType     ServiceType
+  status          RequestStatus     @default(PENDING)
+  priority        Priority          @default(MEDIUM)
+  
+  // Location data
+  latitude        Float
+  longitude       Float
+  address         String?
+  landmark        String?
+  
+  // Request details
+  description     String?
+  injuryType      String?
+  severity        Severity?
+  isSecurityAlert Boolean           @default(false)
+  
+  // AI Analysis
+  aiAnalysis      Json?
+  firstAidSteps   Json?
+  
+  // Timing
+  requestedAt     DateTime          @default(now())
+  acceptedAt      DateTime?
+  arrivedAt       DateTime?
+  completedAt     DateTime?
+  
+  // ETA and tracking
+  estimatedArrival DateTime?
+  actualArrival   DateTime?
+  
+  // Relations
+  locationUpdates LocationUpdate[]
+  notifications   Notification[]
+
+  @@map("emergency_requests")
+}
+
+model LocationUpdate {
+  id        String   @id @default(cuid())
+  requestId String
+  request   EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  
+  latitude  Float
+  longitude Float
+  timestamp DateTime @default(now())
+  
+  // Additional tracking data
+  speed     Float?
+  heading   Float?
+  accuracy  Float?
+
+  @@map("location_updates")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  requestId String?
+  request   EmergencyRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  
+  isRead    Boolean          @default(false)
+  sentAt    DateTime         @default(now())
+  readAt    DateTime?
+
+  @@map("notifications")
+}
+
+model SystemSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// Enums
+enum UserType {
+  CITIZEN
+  PROVIDER
+  ADMIN
+}
+
+enum ServiceType {
+  AMBULANCE
+  FIRE_BRIGADE
+  AIR_AMBULANCE
+  POLICE
+  SECURITY
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Severity {
+  MINOR
+  MODERATE
+  SEVERE
+  CRITICAL
+  FATAL
+}
+
+enum NotificationType {
+  EMERGENCY_REQUEST
+  REQUEST_ACCEPTED
+  PROVIDER_EN_ROUTE
+  PROVIDER_ARRIVED
+  REQUEST_COMPLETED
+  REQUEST_CANCELLED
+  SYSTEM_ALERT
+  FIRST_AID_GUIDANCE
+}

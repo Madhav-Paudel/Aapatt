@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90 transition-colors;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors;
+  }
+  
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  }
+  
+  .status-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .status-pending {
+    @apply bg-warning/10 text-warning;
+  }
+  
+  .status-accepted {
+    @apply bg-info/10 text-info;
+  }
+  
+  .status-en-route {
+    @apply bg-secondary/10 text-secondary;
+  }
+  
+  .status-arrived {
+    @apply bg-success/10 text-success;
+  }
+  
+  .status-completed {
+    @apply bg-success/10 text-success;
+  }
+  
+  .status-cancelled {
+    @apply bg-danger/10 text-danger;
+  }
+  
+  .status-expired {
+    @apply bg-gray/10 text-gray;
+  }
+}
