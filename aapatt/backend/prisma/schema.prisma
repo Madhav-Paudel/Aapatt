@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  email     String?
+  name      String?
+  role      Role     @default(CITIZEN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  emergencyRequests EmergencyRequest[]
+  providerProfile   ProviderProfile?
+  notifications     Notification[]
+  locations         UserLocation[]
+
+  @@map("users")
+}
+
+model ProviderProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerType    ProviderType
+  licenseNumber   String?
+  vehicleNumber   String?
+  isAvailable     Boolean  @default(true)
+  currentLocation Json?    // Store as GeoJSON
+  rating          Float    @default(0.0)
+  totalJobs       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  assignedRequests EmergencyRequest[]
+  locations        ProviderLocation[]
+
+  @@map("provider_profiles")
+}
+
+model EmergencyRequest {
+  id              String            @id @default(cuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerId      String?
+  provider        ProviderProfile?  @relation(fields: [providerId], references: [id])
+  type            EmergencyType
+  status          RequestStatus     @default(PENDING)
+  priority        Priority          @default(MEDIUM)
+  description     String
+  location        Json              // Store as GeoJSON Point
+  address         String?
+  securityAlert   Boolean           @default(false)
+  aiAnalysis      Json?             // Store AI first-aid analysis
+  estimatedEta    Int?              // Estimated time of arrival in minutes
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  completedAt     DateTime?
+
+  // Relations
+  updates         RequestUpdate[]
+  notifications   Notification[]
+
+  @@map("emergency_requests")
+}
+
+model RequestUpdate {
+  id          String   @id @default(cuid())
+  requestId   String
+  request     EmergencyRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  status      RequestStatus
+  message     String
+  location    Json?    // Provider location when update was made
+  createdAt   DateTime @default(now())
+
+  @@map("request_updates")
+}
+
+model UserLocation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location  Json     // Store as GeoJSON Point
+  timestamp DateTime @default(now())
+
+  @@map("user_locations")
+}
+
+model ProviderLocation {
+  id         String   @id @default(cuid())
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  location   Json     // Store as GeoJSON Point
+  heading    Float?   // Direction of travel
+  speed      Float?   // Speed in km/h
+  timestamp  DateTime @default(now())
+
+  @@map("provider_locations")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestId String?
+  request   EmergencyRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?    // Additional notification data
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model SystemConfig {
+  id    String   @id @default(cuid())
+  key   String   @unique
+  value String
+  type  String   @default("string")
+
+  @@map("system_config")
+}
+
+enum Role {
+  CITIZEN
+  PROVIDER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum ProviderType {
+  AMBULANCE
+  FIRE_BRIGADE
+  AIR_AMBULANCE
+  POLICE
+}
+
+enum EmergencyType {
+  MEDICAL
+  FIRE
+  ACCIDENT
+  AIR_EMERGENCY
+  SECURITY
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  ASSIGNED
+  ACCEPTED
+  EN_ROUTE
+  ARRIVED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum NotificationType {
+  REQUEST_CREATED
+  REQUEST_ASSIGNED
+  REQUEST_ACCEPTED
+  PROVIDER_EN_ROUTE
+  PROVIDER_ARRIVED
+  REQUEST_COMPLETED
+  REQUEST_CANCELLED
+  SYSTEM_ALERT
+}

@@ -1,0 +1,26 @@
+{
+  "name": "aapatt-shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Aapatt Emergency Superapp",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [
+    "emergency",
+    "shared",
+    "utilities",
+    "types"
+  ],
+  "author": "Aapatt Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0"
+  }
+}
