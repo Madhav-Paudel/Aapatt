@@ -1,0 +1,49 @@
+{
+  "name": "aapatt-admin-dashboard",
+  "version": "1.0.0",
+  "description": "Aapatt Admin Dashboard",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "axios": "^1.6.2",
+    "socket.io-client": "^4.7.4",
+    "@mui/material": "^5.15.0",
+    "@mui/icons-material": "^5.15.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/x-data-grid": "^6.18.0",
+    "@mui/x-date-pickers": "^6.18.0",
+    "recharts": "^2.8.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "date-fns": "^2.30.0",
+    "lodash": "^4.17.21",
+    "react-query": "^3.39.3",
+    "react-hot-toast": "^2.4.1",
+    "framer-motion": "^10.16.16"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "vitest": "^1.0.4"
+  },
+  "keywords": [
+    "emergency",
+    "admin",
+    "dashboard",
+    "react",
+    "vite"
+  ],
+  "author": "Aapatt Team",
+  "license": "MIT"
+}
