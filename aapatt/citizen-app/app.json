@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Aapatt",
+    "slug": "aapatt-citizen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E53935"
+    },
+    "extra": {
+      "eas": { "projectId": "dummy" }
+    }
+  }
+}
